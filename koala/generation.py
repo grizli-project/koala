@@ -9,7 +9,7 @@ from grizli import utils
 from grizli.aws import db
 
 
-def dataframe_from_extraction(root, extraction_path, output):
+def dataframe_from_extraction(root, extraction_path, output=None):
     # Load the created table from grizli
     ex_fits_path = os.path.join(extraction_path, f"{root}_phot.fits")
     grizli_table = Table.read(ex_fits_path)
@@ -42,7 +42,10 @@ def dataframe_from_extraction(root, extraction_path, output):
     return tab
 
 
-def database_from_extraction():
+def database_from_query(query):
     engine = db.get_db_engine()
     utils.set_warnings()
 
+    result = db.from_sql(query, engine)
+
+    return result
