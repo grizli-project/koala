@@ -13,6 +13,8 @@ from scipy import stats
 from scipy.spatial import cKDTree
 from tqdm import tqdm
 
+from .plotting import Plotter
+
 engine = db.get_db_engine()
 utils.set_warnings()
 
@@ -301,8 +303,7 @@ class PDTable(Table):
 
         roots = np.unique(self['root'])
 
-        dr_cm, dr_sep, dr_area = \
-            self.separation_radius()
+        dr_cm, dr_sep, dr_area = self.separation_radius(z_cm)
 
         for root in tqdm(roots):
             # Get mask for unique object from root

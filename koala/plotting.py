@@ -195,6 +195,9 @@ class Plotter:
         ----------
         projected_densities : array-like
             The scaled projected densities for each object in the table.
+        dz_thresh : float
+            The distance between objects in redshift space used to associate
+            objects when calculating the projected densities.
         z_cluster : float
             The redshift value of the cluster, used with ``dz_thresh`` to
             color the range of objects within that redshift interval.
@@ -209,20 +212,16 @@ class Plotter:
         ax : ~`matplotlib.axes._subplots.AxesSubplot`
             The provided or newly instantiated axis instance.
         """
-        dr_cm, dr_sep, dr_area = \
-            self._table.separation_radius()
-
         h = np.histogram(self._table['z_map'],
                          bins=utils.log_zgrid([0.01, 3.4], dz_thresh*2))
 
-        clu_sel = np.abs(self._table['z_map'] - z_cluster) \
-                  < dz_thresh * (1 + z_cluster)
+        clu_sel = np.abs(self._table['z_map'] - z_cluster) < \
+            dz_thresh * (1 + z_cluster)
 
         if ax is None:
             f, ax = plt.subplots()
 
-        ax.scatter(self._table['z_map'], projected_densities,
-                   #    c=clu_sel,
+        ax.scatter(self._table['z_map'], projected_densities, c=clu_sel,
                    **kwargs)
 
         ax.set_xlabel("$z$")
@@ -295,8 +294,8 @@ class Plotter:
                 ax1, ax2 = axes
 
             ax1.scatter(dr[rsel & ~sel], dd[rsel & ~sel], color='k', alpha=alpha)
-            ax1.scatter(dr[sel][inds], dd[sel][inds],
-                        c=projected_densities[sel][inds],
+            ax1.scatter(dr[rsel & sel][inds], dd[rsel & sel][inds],
+                        c=projected_densities[rsel & sel][inds],
                         alpha=0.9, s=200, cmap=cmap, vmin=vm[0], vmax=vm[1])
 
             ax1.grid()
